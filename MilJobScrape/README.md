@@ -28,6 +28,9 @@ Enter your search terms when prompted.
 
 Enter the top number of words to calculate. 
 
+Output will be displayed to screen based on input. 
+
+Entire word frequency dictionary will be posted to "data.json" file. 
 
 ###Prerequisites
 

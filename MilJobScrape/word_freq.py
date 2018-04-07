@@ -1,9 +1,7 @@
 import collections
-import pandas as pd
-import matplotlib.pyplot as plt
 import glob, os
 import scrapevisible
-
+import json
 
 scrapevisible.main()
 
@@ -51,13 +49,9 @@ word_counter = collections.Counter(wordcount)
 for word, count in word_counter.most_common(n_print):
     print(word, ": ", count)
 
-
-
-# Create a data frame of the most common words 
-# Draw a bar chart
-lst = word_counter.most_common(n_print)
-df = pd.DataFrame(lst, columns = ['Word', 'Count'])
-df.plot.bar(x='Word',y='Count')
+#write data to json
+with open('data.json', 'w+') as outfile:
+    json.dump(wordcount, outfile, ensure_ascii=True, indent=4, sort_keys=True)
 
 
 #clean up files in directory - delete all ".txt" files in current working directory
