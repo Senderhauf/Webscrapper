@@ -1,5 +1,24 @@
-#insert here
+#!/usr/bin/python3 
+print("Content-type:text/html\r\n\r\n")
+print("<html>")
+print("<head><title>Webscrapped Tech Events</title></head>")
+print("<body>")
+print("<h1> Other Tech Events Near You: </h1>")
+
+import cgi
+
+
+'''
+Webcrawler Ideas:
+        Goal: Create webcrawler app for other local techevents to be added to the IEEE CS website
+        Ideas:
+                Local Events for coders from various sites such as:
+                        https://www.eventbrite.com/d/wi--milwaukee/free--science-and-tech--events/?crt=regular&sort=best
+                        http://newaukee.com/event/open-source-showcasing-milwaukees-engineering-culture/
+                        https://www.meetup.com/find/events/tech/?allMeetups=false&radius=10&userFreeform=Milwaukee%2C+WI&mcId=z53211&mcName=Milwaukee%2C+WI&eventFilter=all
+'''
 #webcrape python program with BeautifulSoup package
+
 
 #import beautiful soup v4
 import bs4
@@ -20,8 +39,6 @@ parse the date and time to an integer value
 set keys of event and add events to 
 
 '''
-#months = ["empty","Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-#weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 event = {
 	'date_time': None,
@@ -32,8 +49,8 @@ event = {
 
 eventList = []
 
-filename = "meetup_tech_webscrap.csv"
-f = open(filename, "w")
+#filename = "meetup_tech_webscrap.csv"
+#f = open(filename, "w")
 
 ############################################################################################
 
@@ -54,41 +71,37 @@ eventContainers = page_soup.findAll("ul", {"class":"event-listing-container"})
 
 headers = "date/time, host/venue, name, url\n"
 
-f.write(headers)
-#eventNum = 0
+#f.write(headers)
 
 for eventListingContainer in eventContainers:
 
-        #event_day = eventListingContainer.findAll("div",{"class":"chunk"})#here
+	event_day = eventListingContainer.findAll("li",{"class":re.compile("event-listing")})
 
-        event_day = eventListingContainer.findAll("li",{"class":re.compile("row event")})
-        #len(event_day) is the number of events in particular day
+	#len(event_day) is the number of events in particular day
 
-        for event in event_day:
+	for event in event_day:
+		year = event["data-year"]
+		day = event["data-day"]
+		month = event["data-month"]
 
-                year = event["data-year"]
-                day = event["data-day"]
-                month = event["data-month"]
+		date = str(month)+"/"+str(day)+"/"+str(year)
 
-                date = str(month)+"/"+str(day)+"/"+str(year)
+		time = event.find("time",{"itemprop":"startDate"}).text
 
-                time = event.find("time",{"itemprop":"startDate"}).text
+		host = event.find("div",{"class":"chunk"}).div.a.span.text
 
-                host = event.find("div",{"class":"chunk"}).div.a.span.text
+		name = event.find("a",{"class":re.compile("wrapNice")}).span.text
 
-                name = event.find("a",{"class":re.compile("resetLink big")}).span.text
+		url = event.find("a",{"class":re.compile("wrapNice")})["href"]
 
-                url = event.find("a",{"class":re.compile("resetLink big")})["href"]
+		event['date_time'] = dateparser.parse(date + " " + time)
 
-                event['date_time'] = dateparser.parse(date + " " + time)
+		event['host_venue'] = host
+		event['name'] = name
+		event['url'] = url
+		eventList.append(event)
 
-                event['host_venue'] = host
-                event['name'] = name
-                event['url'] = url
-                eventList.append(event)
-
-                f.write(date + " " + time + "," + host +","+ name + ","+ url + "\n");
-
+#		f.write(date + " " + time + "," + host +","+ name + ","+ url + "\n")
 
 ###################################################################################################################
 
@@ -102,7 +115,7 @@ uClient.close()
 
 page_soup = soup(page_html, "html.parser")
 
-f = open(filename, "a")
+#f = open(filename, "a")
 
 events = page_soup.findAll("div", {"class":re.compile("list-card-v2")})
 
@@ -125,27 +138,22 @@ for event in events:
 		event['url'] = url
 		eventList.append(event)
 
-		f.write(date_time + "," + host + "," + name + "," + url + "\n")
+#		f.write(date_time + "," + host + "," + name + "," + url + "\n")
 
 ###################################################################################################################
 eventList = sorted(eventList, key=lambda event: event['date_time'])
 
 for event in eventList:
-	print("Date & Time: "+str(event['date_time']))
-	print("Event: "+event['host_venue'])
-	print("Name: "+event['name'])
-	print("Url: "+event['url'])
-	print("")
+	print("<p>Date & Time: "+str(event['date_time'])+"</p>")
+	print("<p>Event: "+event['host_venue']+"</p>")
+	print("<p>Name: "+event['name']+"</p>")
+	print("<p>Url: "+event['url']+"</p")
+	print("<br>")
+	print("<br>")
 
-f.close()
-'''
-Webcrawler Ideas:
-        Goal: Create webcrawler app for other local techevents to be added to the IEEE CS website
-        Ideas:
-                Local Events for coders from various sites such as:
-                        https://www.eventbrite.com/d/wi--milwaukee/free--science-and-tech--events/?crt=regular&sort=best
-                        http://newaukee.com/event/open-source-showcasing-milwaukees-engineering-culture/
-                        https://www.meetup.com/find/events/tech/?allMeetups=false&radius=10&userFreeform=Milwaukee%2C+WI&mcId=z53211&mcName=Milwaukee%2C+WI&eventFilter=all
-'''
+print("</body>")
+print("</html>")
+#f.close()
+
 
 
