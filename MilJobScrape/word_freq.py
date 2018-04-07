@@ -7,11 +7,10 @@ import scrapevisible
 
 scrapevisible.main()
 
-'''
+
 # Stopwords
 stopwords = set(line.strip() for line in open('stopwords.txt'))
-stopwords = stopwords.union(set(['mr','mrs','one','two','said']))
-'''
+#stopwords = stopwords.union(set(['mr','mrs','one','two','said']))
 
 # Instantiate a dictionary, and for every word in the file, 
 # Add to the dictionary if it doesn't exist. If it does, increase the count.
@@ -36,11 +35,11 @@ for file in glob.glob("*.txt"):
         #word = word.replace("â€œ","")
         #word = word.replace("â€˜","")
         word = word.replace("*","")
-        #if word not in stopwords:
-        if word not in wordcount:
-            wordcount[word] = 1
-        else:
-            wordcount[word] += 1
+        if word not in stopwords:
+            if word not in wordcount:
+                wordcount[word] = 1
+            else:
+                wordcount[word] += 1
 
     # Close the file
     file.close()
@@ -63,4 +62,5 @@ df.plot.bar(x='Word',y='Count')
 
 #clean up files in directory - delete all ".txt" files in current working directory
 for file in glob.glob("*.txt"):
-    os.remove(file)
+    if file != 'stopwords.txt':
+        os.remove(file)
