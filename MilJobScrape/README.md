@@ -1,12 +1,12 @@
-###README
 
-#Milwaukee Jobs Web Scraper
 
-##Getting Started
+# Milwaukee Jobs Web Scraper
+
+## Getting Started
 
 This is a simple command line webscrapper for determining the word frequency used in job postings at https://milwaukeejobs.com. After the prerequisites are fulfilled you can run this progam in your shell. 	
 
-###Usage
+### Usage
 
 
 From Bash Shell, make sure you have read/write priviledges for Webscrapper directory
@@ -32,7 +32,7 @@ Output will be displayed to screen based on input.
 
 Entire word frequency dictionary will be posted to "data.json" file. 
 
-###Prerequisites
+### Prerequisites
 
 ```
 Python 3.X
