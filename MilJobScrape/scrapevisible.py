@@ -3,6 +3,8 @@ from bs4.element import Comment
 import urllib.request
 import re
 import html as htmlmodule
+import sys
+from time import sleep
 
 def tag_visible(element):
 	if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
@@ -28,6 +30,29 @@ def post_to_file(my_url, filename):
 	html = urllib.request.urlopen(my_url)
 	f.write(text_from_html(html))
 
+# Print iterations progress
+# source: https://gist.github.com/aubricus/print_progress.py
+# Print iterations progress
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█'):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = '\r')
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
 
 def get_jobs(jobs_url):
 	html = urllib.request.urlopen(jobs_url)
@@ -41,8 +66,13 @@ def get_jobs(jobs_url):
 		filename = filename.replace('/', '')
 		filename = filename.replace(' ', '_')
 		filename += '.txt'
-		print(filename)
+		# Update Progress Bar
+
 		post_to_file('https://www.milwaukeejobs.com' + jobDetail["href"], filename)
+		
+
+
+
 
 def main():
 	#jobs_url = input("Enter milwaukeejobs url: ")
@@ -55,13 +85,23 @@ def main():
 	resultCount = soup.findAll("span", {"class":"resultCount"})
 
 	numItems = int(resultCount[0].strong.next_sibling.next_sibling.next_sibling.next_sibling.get_text())
+	
 	print("Search returned "+str(numItems)+" results")
+	
 	numItems += 1
+	
+	printProgressBar(0, numItems, prefix = 'Progress:', suffix = 'Complete', length = 50)
+	
 	for x in range(2,numItems):
 		get_jobs(jobs_url)
 		jobs_url = re.sub('page=\d*','page=' + str(x), jobs_url)
+		printProgressBar(x , numItems, prefix = 'Progress:', suffix = 'Complete', length = 50)
+	
+	printProgressBar(numItems , numItems, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
+	print()	
 
+	
 	'''
 	html = urllib.request.urlopen(jobs_url)
 	soup = BeautifulSoup(html, "html.parser")
