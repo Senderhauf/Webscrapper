@@ -66,7 +66,6 @@ def get_jobs(jobs_url):
 		filename = filename.replace('/', '')
 		filename = filename.replace(' ', '_')
 		filename += '.txt'
-		# Update Progress Bar
 
 		post_to_file('https://www.milwaukeejobs.com' + jobDetail["href"], filename)
 		
