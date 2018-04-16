@@ -6,18 +6,20 @@ import urllib.request
 
 import json
 
-listing = {
-	'name': None, 
-	'price': None, 
-	'href': None, 
-	'housing': None, 
-	'location': None, 
-	'available': None
-}
+
 
 
 
 def get_listing_data(url, apt_list):
+	listing = {
+		'name': None, 
+		'price': None, 
+		'href': None, 
+		'housing': None, 
+		'location': None, 
+		'available': None
+	}
+
 	html = urllib.request.urlopen(url)
 	soup = BeautifulSoup(html, "html.parser")
 	
@@ -32,7 +34,7 @@ def get_listing_data(url, apt_list):
 
 	apt_list.append(listing)
 	
-
+'''
 def get_listings(url):
 	html = urllib.request.urlopen(url)
 	soup = BeautifulSoup(url, "html.parser")
@@ -41,7 +43,7 @@ def get_listings(url):
 
 	for listing in listingContainer:
 		get_listing_data()
-
+'''
 
 def main():
 	url = "https://milwaukee.craigslist.org/search/apa?search_distance=2&postal=53211&max_price=600&min_bedrooms=1&max_bedrooms=2&availabilityMode=0&sale_date=all+dates"
@@ -59,12 +61,16 @@ def main():
 		print(listing.a["href"])
 		get_listing_data(listing.a["href"], apartment_listings)
 
-
 	apartment_listings = sorted(apartment_listings, key=lambda listing: listing['price'])
 	
+	for listing in apartment_listings:
+		print('Price: {0}\nName: {1}\nHousing: {2}\nAvailable: {3}\nHref: {4}\n'.format(listing['price'], listing['name'], listing['housing'], listing['available'], listing['href']))
+
 	with open("listings.txt", "w+") as outfile:
 		for listing in apartment_listings:
 			listing_json = json.dumps(listing)		
 			outfile.write(str(listing_json))
+
+
 if __name__ == '__main__':
 	main()
